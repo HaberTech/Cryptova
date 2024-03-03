@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "786894849619",
+    "project_id": "habertech-cryptova",
+    "storage_bucket": "habertech-cryptova.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:786894849619:android:7c35c04fbeea1e1077a8a6",
+        "android_client_info": {
+          "package_name": "info.habertech.cryptova"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKDgewo5zGRHieEMAYu7soiPB-30cQ7HE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
