@@ -42,6 +42,7 @@ class _BinanceWODLSectionState extends State<BinanceWODLSection>
 
   ListView _wordsList() {
     return ListView.separated(
+      addAutomaticKeepAlives: true,
       itemCount: wordsArray.length + 1, // Add 1 for the share card
       separatorBuilder: (context, index) => index != 0
           ? NativeExample(
@@ -65,6 +66,7 @@ class _BinanceWODLSectionState extends State<BinanceWODLSection>
             ),
             ListView.builder(
               shrinkWrap: true,
+              addAutomaticKeepAlives: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: wordsArray[outerIndex].length,
               itemBuilder: (context, innerIndex) {

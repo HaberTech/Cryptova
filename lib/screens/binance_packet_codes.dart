@@ -21,14 +21,15 @@ class BinananceCryptoBoxesSection extends StatefulWidget {
 class _BinananceCryptoBoxesSectionState
     extends State<BinananceCryptoBoxesSection>
     with AutomaticKeepAliveClientMixin {
-  int adIndex = 0; // Initialize ad index
-  int adInterval = 5; // Insert an ad every 5 items
-  bool hasMoreCodes = true;
   bool isLoading = false;
-  final List<NativeExample> _nativeAds = [];
-  late SharedPreferences sharedPreferences;
+  bool hasMoreCodes = true;
+  int adIndex = 0; // Initialize ad index
+  final int adInterval = 5; // Insert an ad every 5 items
 
   final List<dynamic> _wordsArray = [];
+  final List<NativeExample> _nativeAds = [];
+
+  late SharedPreferences sharedPreferences;
   final ScrollController _scrollController = ScrollController();
   final InterstitialAdExample packetsInterstitialAd =
       InterstitialAdExample(adUnitId: AdUnits.interstitialCopyPacketAd);
@@ -84,13 +85,18 @@ class _BinananceCryptoBoxesSectionState
   }
 
   ListView _wordsList() {
-    int totalItems = _wordsArray.length +
+    final int totalItems = _wordsArray.length +
         (_wordsArray.length / adInterval).floor(); // Total items including ads
 
     return ListView.builder(
       controller: _scrollController..addListener(_scrollListener),
       key: const PageStorageKey('packets_list'),
-      cacheExtent: totalItems * 100.0,
+      cacheExtent: totalItems * 25.0,
+      // Absent = I/flutter ( 6328): TotalIndex: 120 AppIndex: 9, adIndex: 1, isAdIndex: false
+      // 25.0 = I/flutter ( 6328): TotalIndex: 120 AppIndex: 35, adIndex: 5, isAdIndex: true
+      // 50.0 = I/flutter ( 6328): TotalIndex: 120 AppIndex: 59, adIndex: 9, isAdIndex: true
+      // 100.0 = I/flutter ( 6328): TotalIndex: 120 AppIndex: 117, adIndex: 19, isAdIndex: false
+      addAutomaticKeepAlives: true,
       itemCount: totalItems + 1, // Add 1 for the share card
       itemBuilder: (context, index) {
         if (index == 0) return const Card(child: ShareToFriendsCard());
@@ -128,16 +134,19 @@ class _BinananceCryptoBoxesSectionState
     String adUnitId = (templateType == TemplateType.small)
         ? AdUnits.nativeSmallForPackets
         : AdUnits.nativeMediumForPackets;
-    int oldIndex = adIndex;
-    adIndex = adIndex + 1; // Increment ad index by 1
-    if (_nativeAds.length <= oldIndex) {
-      _nativeAds.add(NativeExample(
+
+    if (_nativeAds.length <= adIndex) {
+      // If there's no ad for this index yet, create one
+      NativeExample nativeAd = NativeExample(
         templateType: templateType,
         adUnitId: adUnitId,
-      ));
+      );
+      _nativeAds.add(nativeAd);
     }
+
+    adIndex = adIndex + 1; // Increment ad index by 1
     return Card(
-      child: _nativeAds[oldIndex], // Reference the old index
+      child: _nativeAds[adIndex - 1], // Use the ad for this old index
     );
   }
 
@@ -236,19 +245,21 @@ class CardForCode extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        title: Text(
-          code,
-          textAlign: TextAlign.center,
-        ),
-        subtitle: Text(
-          formatDateTime(date),
-          textAlign: TextAlign.center,
-        ), // Align the text to the center), // Use the function here
-        trailing: IconButton(
-          icon: const Icon(Icons.copy),
-          onPressed: () async => await _copyCodeToClipboard(context, code),
-        ),
-      ),
+          title: Text(
+            code,
+            textAlign: TextAlign.center,
+          ),
+          subtitle: Text(
+            formatDateTime(date),
+            textAlign: TextAlign.center,
+          ), // Align the text to the center), // Use the function here
+          trailing: Semantics(
+            label: 'Copy code to clipboard',
+            child: IconButton(
+              icon: const Icon(Icons.copy),
+              onPressed: () async => await _copyCodeToClipboard(context, code),
+            ),
+          )),
     );
   }
 }

@@ -184,7 +184,7 @@ class NativeExampleState extends State<NativeExample>
   // String? _versionString;
 
   final double _adAspectRatioSmall = (91 / 355);
-  final double _adAspectRatioMedium = /*(370 / 355)*/  (0.90);
+  final double _adAspectRatioMedium = (370 / 355) /*(370 / 355) */;
 
   double get _adAspectRatio {
     return (widget.templateType == TemplateType.small)
@@ -198,14 +198,17 @@ class NativeExampleState extends State<NativeExample>
   @override
   void initState() {
     super.initState();
-    _loadVersionString();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadAd();
+    });
+    // _loadVersionString();
   }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _loadAd();
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   print('#### NativeExampleState: didChangeDependencies');
+  //   _loadAd();
+  // }
   // In your code, the _loadAd() method is called in initState(), and _loadAd() calls _nativeAdStyle(), which uses Theme.of(context). This is what's causing the error.
 
   @override
@@ -213,18 +216,13 @@ class NativeExampleState extends State<NativeExample>
     super.build(context);
     return LayoutBuilder(
       builder: (context, constraints) {
-        return Stack(
-          children: <Widget>[
-            SizedBox(
-                height: constraints.maxWidth * _adAspectRatio,
-                width: constraints.maxWidth),
-            if (_nativeAdIsLoaded && _nativeAd != null)
-              SizedBox(
-                height: constraints.maxWidth * _adAspectRatio,
-                width: constraints.maxWidth,
-                child: AdWidget(ad: _nativeAd!),
-              ),
-          ],
+        final adWidgetHeight = constraints.maxWidth * _adAspectRatio;
+        return SizedBox(
+          height: adWidgetHeight,
+          width: constraints.maxWidth,
+          child: _nativeAdIsLoaded && _nativeAd != null
+              ? AdWidget(ad: _nativeAd!)
+              : const SizedBox(), // Use a SizedBox placeholder for loading
         );
       },
     );
@@ -232,10 +230,9 @@ class NativeExampleState extends State<NativeExample>
 
   /// Loads a native ad.
   void _loadAd() {
-    setState(() {
-      _nativeAdIsLoaded = false;
-    });
-
+    //Set state was  Unnecessary since native ad is false by default
+    _nativeAd
+        ?.dispose(); // Dispose previous Ad if it exists before loading a new one
     _nativeAd = NativeAd(
       adUnitId: widget.adUnitId,
       listener: NativeAdListener(
@@ -265,41 +262,42 @@ class NativeExampleState extends State<NativeExample>
     )..load();
   }
 
-  void _loadVersionString() {
-    MobileAds.instance.getVersionString().then((value) {
-      setState(() {
-        value;
-      });
-    });
-  }
+  // void _loadVersionString() {
+  //   MobileAds.instance.getVersionString().then((value) {
+  //     setState(() {
+  //       value;
+  //     });
+  //   });
+  // }
 
   // Get the native ad style.
   NativeTemplateStyle _nativeAdStyle({required TemplateType templateType}) {
+    final ColorScheme themeColorScheme = Theme.of(context).colorScheme;
     return NativeTemplateStyle(
       templateType: widget.templateType,
-      mainBackgroundColor: Theme.of(context).colorScheme.background,
+      mainBackgroundColor: themeColorScheme.background,
       cornerRadius: 10.0,
       callToActionTextStyle: NativeTemplateTextStyle(
-        textColor: Theme.of(context).colorScheme.onSecondary,
-        backgroundColor: Theme.of(context).colorScheme.secondary,
+        textColor: themeColorScheme.onSecondary,
+        backgroundColor: themeColorScheme.secondary,
         style: NativeTemplateFontStyle.monospace,
         size: 16.0,
       ),
       primaryTextStyle: NativeTemplateTextStyle(
-        textColor: Theme.of(context).colorScheme.onBackground,
-        backgroundColor: Theme.of(context).colorScheme.background,
+        textColor: themeColorScheme.onBackground,
+        backgroundColor: themeColorScheme.background,
         style: NativeTemplateFontStyle.italic,
         size: 16.0,
       ),
       secondaryTextStyle: NativeTemplateTextStyle(
-        textColor: Theme.of(context).colorScheme.onPrimary,
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        textColor: themeColorScheme.onPrimary,
+        backgroundColor: themeColorScheme.primary,
         style: NativeTemplateFontStyle.bold,
         size: 16.0,
       ),
       tertiaryTextStyle: NativeTemplateTextStyle(
-        textColor: Theme.of(context).colorScheme.onSurface,
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        textColor: themeColorScheme.onSurface,
+        backgroundColor: themeColorScheme.surface,
         style: NativeTemplateFontStyle.normal,
         size: 16.0,
       ),

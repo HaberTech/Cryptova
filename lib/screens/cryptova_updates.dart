@@ -32,16 +32,17 @@ class _CryptovaUpdatesSectionState extends State<CryptovaUpdatesSection> {
         child: CircularProgressIndicator(),
       );
     } else {
-      return Stack(
-        alignment: AlignmentDirectional.bottomCenter,
+      return Column(
         children: <Widget>[
-          WebViewWidget(
-            controller: _webViewController,
-            gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
-              Factory<VerticalDragGestureRecognizer>(
-                () => VerticalDragGestureRecognizer(),
-              ),
-            }.toSet(),
+          Expanded(
+            child: WebViewWidget(
+              controller: _webViewController,
+              gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+                Factory<VerticalDragGestureRecognizer>(
+                  () => VerticalDragGestureRecognizer(),
+                ),
+              }.toSet(),
+            ),
           ),
           AnchoredAdaptiveExample(
             adUnitId: AdUnits.bannerForUpdates,
