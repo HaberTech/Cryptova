@@ -45,9 +45,11 @@ class _BinanceWODLSectionState extends State<BinanceWODLSection>
       addAutomaticKeepAlives: true,
       itemCount: wordsArray.length + 1, // Add 1 for the share card
       separatorBuilder: (context, index) => index != 0
-          ? NativeExample(
-              adUnitId: AdUnits.nativeMediumForWOTD,
-              templateType: TemplateType.medium) // Insert ad but not at the top
+          ? Card(
+              child: NativeExample(
+                  adUnitId: AdUnits.nativeMediumForWOTD,
+                  templateType: TemplateType.medium),
+            ) // Insert ad but not at the top
           : const SizedBox(),
       itemBuilder: (context, outerIndex) {
         if (outerIndex == 0) return const Card(child: ShareToFriendsCard());
