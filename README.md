@@ -4,6 +4,7 @@ Binance rewards and more
 
 ## Getting Started
 
+Offering the best access to Binance WOTD and Cryptoboxes
 
 ## Screenshots
 
